@@ -2,11 +2,21 @@ const express = require("express");
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
+const allowedOrigins = ['http://localhost:5173', process.env.FRONTEND_URL].filter(Boolean)
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps, curl, or initial preflight)
+        // or origins listed in allowedOrigins
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
     credentials: true,
     allowedHeaders: ['Content-Type', 'X-Requested-With']
 }
+
 
 // CSRF Protection middleware
 // Rejects state-changing requests that don't include our custom header.
