@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import api from '../utils/axiosConfig'
 import './ListItem.css'
 
-const API = 'http://localhost:3000/api'
+// const API = import.meta.env.VITE_SERVER_URL || 'http://localhost:3000/api'
 
 const CATEGORIES = ['Books', 'Electronics', 'Furniture', 'Clothing', 'Cycles', 'Sports', 'Miscellaneous']
 

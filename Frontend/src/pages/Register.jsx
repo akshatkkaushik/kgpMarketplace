@@ -5,7 +5,7 @@ import api from '../utils/axiosConfig'
 import { useAuth } from '../context/AuthContext'
 import './Register.css'
 
-const API = 'http://localhost:3000/api'
+// const API = import.meta.env.SERVER_URL
 
 const HOSTELS = [
   'Azad Hall', 'BC Roy Hall', 'BRH Hall', 'Gokhale Hall',
