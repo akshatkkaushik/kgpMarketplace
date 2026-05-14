@@ -136,6 +136,29 @@
   margin-top: 10px;
 }
 
+/* ── Resend OTP Button ── */
+.btn-resend-otp {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-resend-otp:hover:not(:disabled) {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.btn-resend-otp:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
 /* ── Profile Image Upload ── */
 .image-upload {
   margin-bottom: 20px;

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../utils/axiosConfig'
@@ -38,6 +38,23 @@ const Register = () => {
   const [previewUrl, setPreviewUrl] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
+  const cooldownRef = useRef(null)
+
+  // Start a 30-second cooldown after sending OTP
+  const startCooldown = () => {
+    setResendCooldown(30)
+    clearInterval(cooldownRef.current)
+    cooldownRef.current = setInterval(() => {
+      setResendCooldown(prev => {
+        if (prev <= 1) { clearInterval(cooldownRef.current); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  // Clean up timer on unmount
+  useEffect(() => () => clearInterval(cooldownRef.current), [])
 
   // ── Step 1: Send OTP ──
   const handleSendOtp = async () => {
@@ -47,8 +64,24 @@ const Register = () => {
     try {
       await api.post('/auth/send-otp', { email })
       setOtpSent(true)
+      startCooldown()
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ── Step 1: Resend OTP ──
+  const handleResendOtp = async () => {
+    setLoading(true)
+    setError('')
+    setOtp('')
+    try {
+      await api.post('/auth/send-otp', { email })
+      startCooldown()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend OTP')
     } finally {
       setLoading(false)
     }
@@ -228,6 +261,18 @@ const Register = () => {
                     >
                       {loading ? 'Verifying...' : 'Verify'}
                     </motion.button>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                    <button
+                      type="button"
+                      className="btn-resend-otp"
+                      onClick={handleResendOtp}
+                      disabled={loading || resendCooldown > 0}
+                    >
+                      {resendCooldown > 0
+                        ? `Resend OTP in ${resendCooldown}s`
+                        : 'Resend OTP'}
+                    </button>
                   </div>
                 </motion.div>
               )}
